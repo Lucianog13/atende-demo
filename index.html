@@ -9,13 +9,15 @@
   <!-- Tailwind CSS (CDN, sin build) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // Colores propios: verde WhatsApp como acento
+    // Colores propios: verde WhatsApp, rosa peluquería y azul Mercado Pago
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             wa: "#25D366",
             "wa-oscuro": "#1DA851",
+            rosa: "#EC4899",
+            mp: "#00A9E0",
           },
         },
       },
@@ -25,147 +27,476 @@
 
 <body class="min-h-[100dvh] bg-zinc-950 font-sans text-zinc-100 antialiased [color-scheme:dark]">
   <!-- Resplandor decorativo sutil arriba -->
-  <div aria-hidden="true" class="pointer-events-none fixed inset-x-0 top-0 h-64 bg-gradient-to-b from-wa/10 to-transparent"></div>
+  <div aria-hidden="true" class="pointer-events-none fixed inset-x-0 top-0 h-64 bg-gradient-to-b from-rosa/10 to-transparent"></div>
 
-  <main class="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col justify-center px-4 py-8 sm:py-12">
+  <main class="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-4 py-8 sm:py-12">
     <!-- Encabezado -->
-    <header class="mb-8 text-center">
-      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 shadow-lg shadow-green-500/20">
-        <!-- Ícono de calendario -->
+    <header class="mb-6 text-center">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-400 to-pink-600 shadow-lg shadow-pink-500/20">
+        <!-- Ícono de tijera -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-7 w-7 text-zinc-950">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.848 8.25l1.536.887M7.848 8.25a3 3 0 11-5.196-3 3 3 0 015.196 3zm1.536.887a2.165 2.165 0 011.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 11-5.196 3 3 3 0 015.196-3zm1.536-.887a2.165 2.165 0 001.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863l2.077-1.199m0-3.328a4.323 4.323 0 012.068-1.379l5.325-1.628a4.5 4.5 0 012.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.331 4.331 0 0010.607 12m3.736 0l7.794 4.5-.802.215a4.5 4.5 0 01-2.48-.043l-5.326-1.629a4.324 4.324 0 01-2.068-1.379M14.343 12l-2.882 1.664" />
         </svg>
       </div>
       <h1 class="text-2xl font-bold tracking-tight">Agendá tu Turno / Consulta</h1>
-      <p class="mt-2 text-sm text-zinc-400">Completá tus datos y te contactamos por WhatsApp.</p>
+      <p class="mt-2 text-sm text-zinc-400">Peluquería Nati · demo del servicio Atendé</p>
     </header>
 
-    <!-- Formulario -->
-    <section class="rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl shadow-black/50">
-      <form id="formulario-turno" class="space-y-5">
-        <!-- 1) Nombre y apellido -->
-        <div>
-          <label for="nombre" class="mb-1.5 block text-sm font-medium text-zinc-300">
-            Nombre y apellido <span class="text-zinc-500">*</span>
-          </label>
-          <input id="nombre" name="nombre" type="text" required autocomplete="name" maxlength="80"
-            placeholder="Ej.: Juan Pérez"
-            class="w-full rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-base placeholder-zinc-600 outline-none transition focus:border-wa focus:ring-2 focus:ring-wa/30" />
-        </div>
+    <!-- Pestañas de modo -->
+    <nav class="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-zinc-900 p-1.5">
+      <button id="pestania-turnos" class="rounded-xl px-3 py-2 text-sm font-semibold transition bg-zinc-800 text-zinc-100">
+        🗓 Agendar turno
+      </button>
+      <button id="pestania-pedidos" class="rounded-xl px-3 py-2 text-sm font-medium text-zinc-400 transition hover:text-zinc-200">
+        🛒 Hacer pedido
+      </button>
+    </nav>
 
-        <!-- 2) Servicio deseado -->
-        <div>
-          <label for="servicio" class="mb-1.5 block text-sm font-medium text-zinc-300">
-            Servicio deseado <span class="text-zinc-500">*</span>
-          </label>
-          <div class="relative">
-            <select id="servicio" name="servicio" required
-              class="w-full appearance-none rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 pr-10 text-base text-zinc-100 outline-none transition focus:border-wa focus:ring-2 focus:ring-wa/30">
-              <option value="" disabled selected>Elegí un servicio…</option>
-              <!-- Servicios de ejemplo: editar acá los del negocio -->
-              <option value="opcion_a">Opción A</option>
-              <option value="opcion_b">Opción B</option>
-              <option value="opcion_c">Opción C</option>
-            </select>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-              class="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-            </svg>
+    <!-- ================= VISTA: TURNOS ================= -->
+    <section id="vista-turnos">
+      <div class="rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl shadow-black/50">
+        <form id="formulario-turno" class="space-y-5">
+          <div>
+            <label for="nombre" class="mb-1.5 block text-sm font-medium text-zinc-300">
+              Nombre y apellido <span class="text-zinc-500">*</span>
+            </label>
+            <input id="nombre" name="nombre" type="text" required autocomplete="name" maxlength="80"
+              placeholder="Ej.: Juana Pérez"
+              class="w-full rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-base placeholder-zinc-600 outline-none transition focus:border-rosa focus:ring-2 focus:ring-rosa/30" />
           </div>
-        </div>
 
-        <!-- 3) Fecha y horario preferido -->
-        <div>
-          <label for="fecha-hora" class="mb-1.5 block text-sm font-medium text-zinc-300">
-            Fecha y horario preferido <span class="text-zinc-500">*</span>
-          </label>
-          <input id="fecha-hora" name="fecha-hora" type="datetime-local" required
-            class="w-full rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-base outline-none transition focus:border-wa focus:ring-2 focus:ring-wa/30" />
-        </div>
+          <div>
+            <label for="servicio" class="mb-1.5 block text-sm font-medium text-zinc-300">
+              Servicio deseado <span class="text-zinc-500">*</span>
+            </label>
+            <div class="relative">
+              <select id="servicio" name="servicio" required
+                class="w-full appearance-none rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 pr-10 text-base text-zinc-100 outline-none transition focus:border-rosa focus:ring-2 focus:ring-rosa/30">
+                <option value="" disabled selected>Elegí un servicio…</option>
+                <option value="Corte — $8.000">Corte — $8.000</option>
+                <option value="Tintura (hasta los hombros) — $15.000">Tintura (hasta los hombros) — $15.000</option>
+                <option value="Tintura (pelo largo) — $18.000">Tintura (pelo largo) — $18.000</option>
+                <option value="Peinado — $6.000">Peinado — $6.000</option>
+                <option value="Baño de crema — $10.000">Baño de crema — $10.000</option>
+              </select>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                class="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </div>
+          </div>
 
-        <!-- 4) Notas o comentarios -->
-        <div>
-          <label for="notas" class="mb-1.5 block text-sm font-medium text-zinc-300">
-            Notas o comentarios <span class="text-zinc-500">(opcional)</span>
-          </label>
-          <textarea id="notas" name="notas" rows="3" maxlength="300"
-            placeholder="Contanos brevemente qué necesitás…"
-            class="w-full resize-none rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-base placeholder-zinc-600 outline-none transition focus:border-wa focus:ring-2 focus:ring-wa/30"></textarea>
-        </div>
+          <div>
+            <label for="fecha-hora" class="mb-1.5 block text-sm font-medium text-zinc-300">
+              Fecha y horario preferido <span class="text-zinc-500">*</span>
+            </label>
+            <input id="fecha-hora" name="fecha-hora" type="datetime-local" required
+              class="w-full rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-base outline-none transition focus:border-rosa focus:ring-2 focus:ring-rosa/30" />
+          </div>
 
-        <!-- Botón principal -->
-        <button type="submit"
-          class="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-wa px-4 py-3.5 text-base font-semibold text-zinc-950 shadow-lg shadow-wa/25 transition hover:bg-wa-oscuro active:scale-[0.98]">
-          <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-          </svg>
-          Confirmar y Enviar por WhatsApp
-        </button>
-        <p class="text-center text-xs text-zinc-500">Al confirmar se abre WhatsApp con tu solicitud lista para enviar.</p>
-      </form>
+          <div>
+            <label for="notas" class="mb-1.5 block text-sm font-medium text-zinc-300">
+              Notas o comentarios <span class="text-zinc-500">(opcional)</span>
+            </label>
+            <textarea id="notas" name="notas" rows="2" maxlength="300"
+              placeholder="Ej.: soy alérgica al amoníaco…"
+              class="w-full resize-none rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 text-base placeholder-zinc-600 outline-none transition focus:border-rosa focus:ring-2 focus:ring-rosa/30"></textarea>
+          </div>
+
+          <p id="error-turno" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300"></p>
+
+          <button type="submit"
+            class="group flex w-full items-center justify-center gap-2.5 rounded-xl bg-wa px-4 py-3.5 text-base font-semibold text-zinc-950 shadow-lg shadow-wa/25 transition hover:bg-wa-oscuro active:scale-[0.98]">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+            </svg>
+            Confirmar y Agendar
+          </button>
+        </form>
+      </div>
     </section>
+
+    <!-- ================= VISTA: CONFIRMACIÓN ================= -->
+    <section id="vista-confirmacion" hidden>
+      <div class="rounded-3xl border border-white/10 bg-zinc-900 p-6 text-center shadow-2xl shadow-black/50">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-wa/15">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="#25D366" class="h-9 w-9">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold">¡Turno agendado!</h2>
+        <p class="mt-1 text-sm text-zinc-400">Quedó guardado en la agenda. Te mandamos la confirmación por WhatsApp.</p>
+
+        <div id="resumen-turno" class="mt-5 space-y-2 rounded-2xl border border-white/10 bg-zinc-950/60 p-4 text-left text-sm"></div>
+
+        <h3 class="mt-6 mb-3 text-sm font-semibold text-zinc-300">📋 Últimos turnos agendados (agenda real)</h3>
+        <ul id="lista-agenda" class="space-y-2 text-left"></ul>
+
+        <button id="btn-otro-turno" class="mt-6 w-full rounded-xl border border-white/10 bg-zinc-800 px-4 py-3 text-sm font-semibold transition hover:bg-zinc-700">
+          Agendar otro turno
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= VISTA: PEDIDOS ================= -->
+    <section id="vista-pedidos" hidden>
+      <div class="rounded-3xl border border-white/10 bg-zinc-900 p-6 shadow-2xl shadow-black/50">
+        <h2 class="mb-4 text-base font-semibold text-zinc-200">Elegí tus productos</h2>
+        <div id="lista-productos" class="space-y-3"></div>
+
+        <div class="mt-6 flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-3">
+          <span class="text-sm text-zinc-400">Total</span>
+          <span id="total-pedido" class="text-xl font-bold">$0</span>
+        </div>
+
+        <p id="error-pedido" class="mt-3 hidden rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300"></p>
+
+        <button id="btn-pagar" class="mt-4 flex w-full items-center justify-center gap-2.5 rounded-xl bg-mp px-4 py-3.5 text-base font-semibold text-zinc-950 shadow-lg shadow-mp/25 transition hover:brightness-110 active:scale-[0.98]">
+          💳 Pagar con Mercado Pago
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= VISTA: PAGO ================= -->
+    <section id="vista-pago" hidden>
+      <div class="rounded-3xl border border-white/10 bg-zinc-900 p-6 text-center shadow-2xl shadow-black/50">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-mp/15">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="#00A9E0" class="h-9 w-9">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold">¡Pedido registrado!</h2>
+        <p class="mt-1 text-sm text-zinc-400">Este es el link de pago que el cliente recibe por WhatsApp.</p>
+
+        <div class="mt-5 rounded-2xl border border-white/10 bg-zinc-950/60 p-4">
+          <p class="text-sm text-zinc-400">Monto a pagar</p>
+          <p id="total-pago" class="text-2xl font-bold text-mp"></p>
+          <div class="mt-3 flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-zinc-900 px-3 py-2.5">
+            <a id="link-pago" href="#" target="_blank" rel="noopener" class="truncate text-sm text-mp underline"></a>
+            <button id="btn-copiar" class="shrink-0 rounded-lg bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold transition hover:bg-zinc-700">Copiar</button>
+          </div>
+          <p class="mt-3 text-xs text-zinc-500">Link de ejemplo: en la versión real se genera con tu cuenta de Mercado Pago y llega solo al chat del cliente.</p>
+        </div>
+
+        <button id="btn-volver-pedido" class="mt-6 w-full rounded-xl border border-white/10 bg-zinc-800 px-4 py-3 text-sm font-semibold transition hover:bg-zinc-700">
+          Volver a la demo
+        </button>
+      </div>
+    </section>
+
+    <footer class="mt-8 text-center text-xs text-zinc-600">
+      Demo de <span class="font-semibold text-zinc-400">Atendé</span> — el asistente que atiende tu negocio 24/7.
+    </footer>
   </main>
 
   <script>
     /* ============================================================
-       Agendador de turnos — lógica (JavaScript vanilla, sin librerías)
+       Demo de Atendé — peluquería de ejemplo (JavaScript vanilla)
+       Flujos: agendar turno (se guarda en la base real) y pedido
+       con link de pago (ilustrativo). Sin librerías.
        ============================================================ */
 
-    // Número de WhatsApp que recibe las solicitudes (formato internacional, sin "+")
+    // Configuración (valores reales inyectados al desplegar)
+    const SUPABASE_URL = "https://fwmamedottlorowzbhla.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3bWFtZWRvdHRsb3Jvd3piaGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5MzQ3NTMsImV4cCI6MjEwMjUxMDc1M30.VVYvnM_cV_utUNnDRbl7pi0Y3J-1tkNb6MjKz_5_IF4";
     const NUMERO_WHATSAPP = "5493434065289";
 
-    const formulario = document.getElementById("formulario-turno");
-    const campoFecha = document.getElementById("fecha-hora");
+    // ---------- helpers ----------
 
-    // El picker de fecha no deja elegir un momento ya pasado
-    // (datetime-local espera "AAAA-MM-DDTHH:MM" en hora LOCAL)
-    function formatearISO_local(fecha) {
-      const desfase = fecha.getTimezoneOffset() * 60000; // minutos → milisegundos
-      return new Date(fecha.getTime() - desfase).toISOString().slice(0, 16);
-    }
-    campoFecha.min = formatearISO_local(new Date());
-
-    // "2026-08-25T15:30" → "martes 25 de agosto de 2026, 15:30"
     function formatearFechaHora(valor) {
-      const opciones = {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      };
+      const opciones = { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" };
       return new Intl.DateTimeFormat("es-AR", opciones).format(new Date(valor));
     }
 
-    formulario.addEventListener("submit", (evento) => {
+    function formatearFechaCorta(valor) {
+      const opciones = { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" };
+      return new Intl.DateTimeFormat("es-AR", opciones).format(new Date(valor));
+    }
+
+    function formatearISO_local(fecha) {
+      const desfase = fecha.getTimezoneOffset() * 60000;
+      return new Date(fecha.getTime() - desfase).toISOString().slice(0, 16);
+    }
+
+    const formatearPesos = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
+
+    function mostrarVista(id) {
+      for (const vid of ["vista-turnos", "vista-confirmacion", "vista-pedidos", "vista-pago"]) {
+        document.getElementById(vid).hidden = vid !== id;
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function activarPestania(boton, otros) {
+      boton.className = "rounded-xl px-3 py-2 text-sm font-semibold transition bg-zinc-800 text-zinc-100";
+      for (const o of otros) o.className = "rounded-xl px-3 py-2 text-sm font-medium text-zinc-400 transition hover:text-zinc-200";
+    }
+
+    // Llamada a la base de datos real (Supabase) — clave anon, solo tablas de demo
+    async function llamarBase(tabla, opciones) {
+      const metodo = opciones.metodo || "GET";
+      const url = `${SUPABASE_URL}/rest/v1/${tabla}${opciones.query || ""}`;
+      const resp = await fetch(url, {
+        method: metodo,
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          // sin este header PostgREST devuelve 201 vacío aunque lleve ?select=
+          ...(metodo === "POST" ? { Prefer: "return=representation" } : {}),
+        },
+        body: opciones.cuerpo ? JSON.stringify(opciones.cuerpo) : undefined,
+      });
+      if (!resp.ok) throw new Error("error de la base (" + resp.status + ")");
+      // POST sin ?select devuelve 201 con cuerpo vacío: hay que leer texto y parsear a mano
+      const texto = await resp.text();
+      return texto ? JSON.parse(texto) : null;
+    }
+
+    // ---------- pestañas ----------
+
+    const pestaTurnos = document.getElementById("pestania-turnos");
+    const pestaPedidos = document.getElementById("pestania-pedidos");
+    pestaTurnos.addEventListener("click", () => { activarPestania(pestaTurnos, [pestaPedidos]); mostrarVista("vista-turnos"); });
+    pestaPedidos.addEventListener("click", () => { activarPestania(pestaPedidos, [pestaTurnos]); mostrarVista("vista-pedidos"); });
+
+    // ---------- flujo: turnos ----------
+
+    const formulario = document.getElementById("formulario-turno");
+    document.getElementById("fecha-hora").min = formatearISO_local(new Date());
+
+    formulario.addEventListener("submit", async (evento) => {
       evento.preventDefault();
+      const errorCaja = document.getElementById("error-turno");
+      errorCaja.hidden = true;
 
       const nombre = document.getElementById("nombre").value.trim();
       const servicio = document.getElementById("servicio").value;
       const fechaHora = document.getElementById("fecha-hora").value;
       const notas = document.getElementById("notas").value.trim();
 
-      // Nombre legible del servicio seleccionado
-      const nombreServicio =
-        document.querySelector(`#servicio option[value="${servicio}"]`)?.textContent ?? servicio;
+      try {
+        // 1) se guarda el turno en la base real de la demo
+        await llamarBase("demo_turnos", {
+          metodo: "POST",
+          cuerpo: { nombre, servicio, fecha_hora: fechaHora, notas: notas || null },
+        });
 
-      // Armado del mensaje (los * * ponen negrita en WhatsApp)
-      const lineas = [
-        "¡Hola! Quiero agendar un turno / consulta 📅",
-        "",
-        `👤 *Nombre:* ${nombre}`,
-        `🛠 *Servicio:* ${nombreServicio}`,
-        `📅 *Fecha y horario:* ${formatearFechaHora(fechaHora)}`,
-      ];
-      if (notas) lineas.push(`📝 *Notas:* ${notas}`);
+        // 2) pantalla de confirmación + agenda actualizada
+        const resumen = document.getElementById("resumen-turno");
+        resumen.innerHTML = "";
+        for (const [clave, valor] of [
+          ["👤 Nombre", nombre],
+          ["✂️ Servicio", servicio],
+          ["📅 Fecha y horario", formatearFechaHora(fechaHora)],
+        ]) {
+          const fila = document.createElement("p");
+          fila.innerHTML = `<span class="text-zinc-400">${clave}:</span> <strong>${valor}</strong>`;
+          resumen.appendChild(fila);
+        }
+        if (notas) {
+          const filaNotas = document.createElement("p");
+          filaNotas.innerHTML = `<span class="text-zinc-400">📝 Notas:</span> ${notas}`;
+          resumen.appendChild(filaNotas);
+        }
 
-      const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(lineas.join("\n"))}`;
+        await cargarAgenda();
+        mostrarVista("vista-confirmacion");
 
-      // Abre WhatsApp en pestaña nueva (en el celular, abre la app directo)
-      const ventana = window.open(url, "_blank", "noopener");
-      if (!ventana) window.location.href = url; // por si el navegador bloquea la pestaña
+        // 3) aviso al dueño por WhatsApp
+        const mensaje = [
+          "¡Hola! Quiero agendar un turno 📅",
+          "",
+          `👤 *Nombre:* ${nombre}`,
+          `✂️ *Servicio:* ${servicio}`,
+          `📅 *Fecha y horario:* ${formatearFechaHora(fechaHora)}`,
+          ...(notas ? [`📝 *Notas:* ${notas}`] : []),
+        ];
+        const url = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje.join("\n"))}`;
+        const ventana = window.open(url, "_blank", "noopener");
+        if (!ventana) window.location.href = url;
+      } catch (err) {
+        errorCaja.textContent = "No se pudo guardar en la agenda. Fijate la conexión e intentá de nuevo.";
+        errorCaja.hidden = false;
+      }
     });
+
+    async function cargarAgenda() {
+      const lista = document.getElementById("lista-agenda");
+      lista.innerHTML = '<li class="text-sm text-zinc-500">Cargando agenda…</li>';
+      try {
+        const filas = await llamarBase("demo_turnos", { query: "?select=nombre,servicio,fecha_hora&order=creado_en.desc&limit=6" });
+        lista.innerHTML = "";
+        if (!filas.length) {
+          lista.innerHTML = '<li class="text-sm text-zinc-500">Todavía no hay turnos — ¡agendá el primero! 😄</li>';
+          return;
+        }
+        for (const f of filas) {
+          const li = document.createElement("li");
+          li.className = "flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-2.5";
+          const izq = document.createElement("div");
+          izq.className = "min-w-0";
+          const nombre = document.createElement("p");
+          nombre.className = "truncate text-sm font-medium";
+          nombre.textContent = f.nombre;
+          const servicio = document.createElement("p");
+          servicio.className = "truncate text-xs text-zinc-400";
+          servicio.textContent = f.servicio;
+          izq.appendChild(nombre);
+          izq.appendChild(servicio);
+          const fecha = document.createElement("span");
+          fecha.className = "shrink-0 text-xs text-rosa";
+          fecha.textContent = formatearFechaCorta(f.fecha_hora);
+          li.appendChild(izq);
+          li.appendChild(fecha);
+          lista.appendChild(li);
+        }
+      } catch {
+        lista.innerHTML = '<li class="text-sm text-zinc-500">No se pudo cargar la agenda.</li>';
+      }
+    }
+
+    document.getElementById("btn-otro-turno").addEventListener("click", () => {
+      formulario.reset();
+      mostrarVista("vista-turnos");
+    });
+
+    // ---------- flujo: pedidos ----------
+
+    const PRODUCTOS = [
+      { id: "shampoo", nombre: "Shampoo neutro", precio: 9500 },
+      { id: "acondicionador", nombre: "Acondicionador", precio: 9500 },
+      { id: "tintura", nombre: "Tintura de color", precio: 18000 },
+      { id: "matizador", nombre: "Matizador", precio: 7000 },
+    ];
+    const carrito = {}; // id -> cantidad
+
+    function dibujarProductos() {
+      const contenedor = document.getElementById("lista-productos");
+      contenedor.innerHTML = "";
+      for (const p of PRODUCTOS) {
+        const fila = document.createElement("div");
+        fila.className = "flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-3";
+
+        const info = document.createElement("div");
+        const nombre = document.createElement("p");
+        nombre.className = "text-sm font-medium";
+        nombre.textContent = p.nombre;
+        const precio = document.createElement("p");
+        precio.className = "text-xs text-zinc-400";
+        precio.textContent = formatearPesos.format(p.precio);
+        info.appendChild(nombre);
+        info.appendChild(precio);
+
+        const controles = document.createElement("div");
+        controles.className = "flex items-center gap-2";
+        const menos = document.createElement("button");
+        menos.type = "button";
+        menos.dataset.accion = "menos";
+        menos.dataset.id = p.id;
+        menos.className = "flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-lg font-bold transition hover:bg-zinc-700";
+        menos.textContent = "−";
+        const cantidad = document.createElement("span");
+        cantidad.id = "cant-" + p.id;
+        cantidad.className = "w-6 text-center text-sm font-semibold";
+        cantidad.textContent = "0";
+        const mas = document.createElement("button");
+        mas.type = "button";
+        mas.dataset.accion = "mas";
+        mas.dataset.id = p.id;
+        mas.className = "flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-lg font-bold transition hover:bg-zinc-700";
+        mas.textContent = "+";
+        controles.appendChild(menos);
+        controles.appendChild(cantidad);
+        controles.appendChild(mas);
+
+        fila.appendChild(info);
+        fila.appendChild(controles);
+        contenedor.appendChild(fila);
+      }
+    }
+
+    function actualizarTotal() {
+      let total = 0;
+      for (const p of PRODUCTOS) total += p.precio * (carrito[p.id] || 0);
+      document.getElementById("total-pedido").textContent = formatearPesos.format(total);
+      return total;
+    }
+
+    document.getElementById("lista-productos").addEventListener("click", (evento) => {
+      const boton = evento.target.closest("button[data-accion]");
+      if (!boton) return;
+      const id = boton.dataset.id;
+      carrito[id] = carrito[id] || 0;
+      if (boton.dataset.accion === "mas") carrito[id]++;
+      else if (carrito[id] > 0) carrito[id]--;
+      document.getElementById("cant-" + id).textContent = String(carrito[id]);
+      actualizarTotal();
+    });
+
+    document.getElementById("btn-pagar").addEventListener("click", async () => {
+      const total = actualizarTotal();
+      const errorCaja = document.getElementById("error-pedido");
+      errorCaja.hidden = true;
+      if (total === 0) {
+        errorCaja.textContent = "Elegí al menos un producto.";
+        errorCaja.hidden = false;
+        return;
+      }
+
+      const items = PRODUCTOS.filter((p) => carrito[p.id]).map((p) => ({
+        producto: p.nombre,
+        cantidad: carrito[p.id],
+        precio: p.precio,
+      }));
+
+      try {
+        // se guarda el pedido en la base real de la demo
+        const guardado = await llamarBase("demo_pedidos", {
+          metodo: "POST",
+          cuerpo: { items, total },
+          query: "?select=id",
+        });
+        const idPedido = (guardado && guardado[0] && guardado[0].id
+          ? guardado[0].id
+          : "demo-" + Date.now()
+        ).slice(0, 8);
+
+        document.getElementById("total-pago").textContent = formatearPesos.format(total);
+        const link = document.getElementById("link-pago");
+        link.href = `https://mpago.la/atende-${idPedido}`;
+        link.textContent = `https://mpago.la/atende-${idPedido}`;
+        mostrarVista("vista-pago");
+      } catch {
+        errorCaja.textContent = "No se pudo registrar el pedido. Fijate la conexión e intentá de nuevo.";
+        errorCaja.hidden = false;
+      }
+    });
+
+    document.getElementById("btn-copiar").addEventListener("click", async () => {
+      const link = document.getElementById("link-pago");
+      try {
+        await navigator.clipboard.writeText(link.textContent);
+        document.getElementById("btn-copiar").textContent = "¡Listo!";
+        setTimeout(() => (document.getElementById("btn-copiar").textContent = "Copiar"), 2000);
+      } catch {
+        link.focus();
+        link.select();
+      }
+    });
+
+    document.getElementById("btn-volver-pedido").addEventListener("click", () => {
+      for (const id in carrito) delete carrito[id];
+      dibujarProductos();
+      actualizarTotal();
+      mostrarVista("vista-pedidos");
+    });
+
+    // ---------- inicio ----------
+
+    dibujarProductos();
+    actualizarTotal();
+    mostrarVista("vista-turnos");
   </script>
 </body>
 </html>
