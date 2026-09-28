@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atendé — Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --fondo: #04231f;
+    --fondo2: #06302a;
+    --borde: rgba(255,255,255,.10);
+    --verde: #10B981;
+    --teal: #14B8A6;
+    --ambar: #F59E0B;
+    --texto: #F4F7F5;
+    --muted: #9DB8B0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    min-height:100vh; background:var(--fondo); color:var(--texto);
+    font-family:'Sora', system-ui, sans-serif;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    background-image:
+      radial-gradient(ellipse 55% 45% at 28% 18%, rgba(16,185,129,.20), transparent 70%),
+      radial-gradient(ellipse 50% 42% at 80% 82%, rgba(245,158,11,.12), transparent 70%);
+  }
+  .caja {
+    width:100%; max-width:440px; background:rgba(255,255,255,.035);
+    border:1px solid var(--borde); border-radius:22px; padding:36px 32px;
+  }
+  .marca { text-align:center; margin-bottom:28px; }
+  .marca .nombre { font-weight:800; font-size:44px; letter-spacing:-1px; }
+  .marca .nombre .accento {
+    background:linear-gradient(135deg,#34D399,#FBBF24);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .marca .lema { color:var(--muted); font-size:11px; letter-spacing:5px; text-transform:uppercase; margin-top:6px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:16px 0 6px; letter-spacing:.5px; }
+  input {
+    width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--borde);
+    background:rgba(255,255,255,.05); color:var(--texto); font-family:inherit; font-size:15px; outline:none;
+  }
+  input:focus { border-color:var(--verde); }
+  button {
+    width:100%; margin-top:22px; padding:14px; border:none; border-radius:12px;
+    background:linear-gradient(135deg,var(--verde),var(--teal)); color:#04231f;
+    font-family:inherit; font-weight:800; font-size:16px; cursor:pointer; letter-spacing:.5px;
+  }
+  button:hover { filter:brightness(1.08); }
+  button.secundario { background:transparent; color:var(--muted); border:1px solid var(--borde); margin-top:10px; font-weight:600; }
+  .error { display:none; margin-top:16px; padding:12px 14px; border-radius:12px; font-size:14px;
+    background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color:#FCA5A5; }
+  .ok { display:none; margin-top:16px; padding:12px 14px; border-radius:12px; font-size:14px;
+    background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.35); color:#A7F3D0; }
+  .tarjeta { background:rgba(255,255,255,.04); border:1px solid var(--borde); border-radius:14px; padding:18px; margin-top:18px; }
+  .tarjeta .titulo { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:3px; margin-bottom:10px; }
+  .tarjeta .dato { font-size:17px; font-weight:700; margin-bottom:4px; }
+  .tarjeta .chico { font-size:13px; color:var(--muted); }
+  .pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700;
+    background:rgba(245,158,11,.14); border:1px solid rgba(245,158,11,.35); color:#FDE68A; }
+  .oculto { display:none; }
+  h2 { font-size:19px; margin-bottom:4px; }
+  .sub { color:var(--muted); font-size:14px; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<main class="caja">
+  <div class="marca">
+    <div class="nombre">Atend<span class="accento">é</span></div>
+    <div class="lema">El Recepcionista con Memoria</div>
+  </div>
+
+  <!-- VISTA: LOGIN -->
+  <section id="vista-login">
+    <h2>Entrá a tu panel</h2>
+    <div class="sub">Con tu cuenta de Atendé</div>
+    <label>Email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="tu@email.com">
+    <label>Contraseña</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
+    <div class="error" id="error-login"></div>
+    <button id="btn-login">Entrar</button>
+  </section>
+
+  <!-- VISTA: ALTA DE NEGOCIO (sin negocio aun) -->
+  <section id="vista-alta" class="oculto">
+    <h2>Demos de alta tu negocio</h2>
+    <div class="sub">Un minuto y queda listo para conectar el bot</div>
+    <label>Nombre del negocio</label>
+    <input id="alta-nombre" placeholder="Ej. Ferretería El Tornillo">
+    <label>Rubro</label>
+    <input id="alta-rubro" placeholder="Ej. ferretería, farmacia, rotisería">
+    <label>WhatsApp del negocio (con código de país)</label>
+    <input id="alta-numero" placeholder="543434065289" inputmode="numeric">
+    <div class="error" id="error-alta"></div>
+    <div class="ok" id="ok-alta"></div>
+    <button id="btn-alta">Crear negocio</button>
+  </section>
+
+  <!-- VISTA: MI NEGOCIO -->
+  <section id="vista-negocio" class="oculto">
+    <h2>Tu negocio</h2>
+    <div class="tarjeta">
+      <div class="titulo">Negocio</div>
+      <div class="dato" id="n-nombre"></div>
+      <div class="chico" id="n-rubro"></div>
+    </div>
+    <div class="tarjeta">
+      <div class="titulo">Bot de WhatsApp</div>
+      <div class="dato" id="n-estado"></div>
+      <div class="chico" id="n-numero"></div>
+    </div>
+    <button class="secundario" id="btn-salir">Salir</button>
+  </section>
+</main>
+
+<script>
+  const SUPABASE_URL = "https://fwmamedottlorowzbhla.supabase.co";
+  const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3bWFtZWRvdHRsb3Jvd3piaGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5MzQ3NTMsImV4cCI6MjEwMjUxMDc1M30.VVYvnM_cV_utUNnDRbl7pi0Y3J-1tkNb6MjKz_5_IF4";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const $ = (id) => document.getElementById(id);
+  const mostrar = (vista) => {
+    ["vista-login", "vista-alta", "vista-negocio"].forEach(v => $(v).classList.toggle("oculto", v !== vista));
+  };
+  const error = (id, msg) => { $(id).textContent = msg; $(id).style.display = msg ? "block" : "none"; };
+
+  function slugDe(nombre) {
+    return nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  }
+
+  async function entrar() {
+    error("error-login", "");
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    if (!email || !password) { error("error-login", "Completá email y contraseña."); return; }
+    const { data, error: err } = await db.auth.signInWithPassword({ email, password });
+    if (err) { error("error-login", err.message); return; }
+    await cargarMiNegocio();
+  }
+
+  async function cargarMiNegocio() {
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) { mostrar("vista-login"); return; }
+    // RLS garantiza que solo puede ver SU negocio
+    const { data } = await db.from("negocios").select("*").eq("dueno_user_id", user.id).maybeSingle();
+    if (!data) {
+      mostrar("vista-alta");
+    } else {
+      $("n-nombre").textContent = data.nombre;
+      $("n-rubro").textContent = data.rubro || "sin rubro definido";
+      $("n-numero").textContent = "Número: " + data.numero_whatsapp;
+      $("n-estado").textContent = data.activo ? "Conectado" : "Pausado";
+      $("n-estado").className = "dato";
+      mostrar("vista-negocio");
+    }
+  }
+
+  async function darAlta() {
+    error("error-alta", "");
+    $("ok-alta").style.display = "none";
+    const nombre = $("alta-nombre").value.trim();
+    const rubro = $("alta-rubro").value.trim();
+    const numero = $("alta-numero").value.trim().replace(/[^\d+]/g, "");
+    if (!nombre) { error("error-alta", "El nombre es obligatorio."); return; }
+    if (!/^54\d{10,12}$/.test(numero)) {
+      error("error-alta", "El número debe ser formato E.164 argentino, ej. 543434065289 (54 + 10 dígitos).");
+      return;
+    }
+    const { data: { user } } = await db.auth.getUser();
+    const { data, error: err } = await db
+      .from("negocios")
+      .insert({
+        slug: slugDe(nombre) + "-" + Math.random().toString(36).slice(2, 6),
+        nombre, rubro: rubro || null, tipo: "mixto",
+        numero_whatsapp: numero, dueno_user_id: user.id, plan: "piloto",
+      })
+      .select().single();
+    if (err) { error("error-alta", err.message); return; }
+    $("ok-alta").textContent = `Negocio "${data.nombre}" creado. El trigger ya te registró como dueño.`;
+    $("ok-alta").style.display = "block";
+    setTimeout(cargarMiNegocio, 1500);
+  }
+
+  async function salir() {
+    await db.auth.signOut();
+    $("email").value = ""; $("password").value = "";
+    mostrar("vista-login");
+  }
+
+  $("btn-login").addEventListener("click", entrar);
+  $("password").addEventListener("keydown", e => { if (e.key === "Enter") entrar(); });
+  $("btn-alta").addEventListener("click", darAlta);
+  $("btn-salir").addEventListener("click", salir);
+
+  (async () => {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) await cargarMiNegocio(); else mostrar("vista-login");
+  })();
+</script>
+</body>
+</html>
