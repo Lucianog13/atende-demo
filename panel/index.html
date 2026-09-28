@@ -9,14 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --fondo: #04231f;
-    --fondo2: #06302a;
-    --borde: rgba(255,255,255,.10);
-    --verde: #10B981;
-    --teal: #14B8A6;
-    --ambar: #F59E0B;
-    --texto: #F4F7F5;
-    --muted: #9DB8B0;
+    --fondo: #04231f; --borde: rgba(255,255,255,.10);
+    --verde: #10B981; --teal: #14B8A6; --ambar: #F59E0B;
+    --texto: #F4F7F5; --muted: #9DB8B0;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -28,7 +23,7 @@
       radial-gradient(ellipse 50% 42% at 80% 82%, rgba(245,158,11,.12), transparent 70%);
   }
   .caja {
-    width:100%; max-width:440px; background:rgba(255,255,255,.035);
+    width:100%; max-width:520px; background:rgba(255,255,255,.035);
     border:1px solid var(--borde); border-radius:22px; padding:36px 32px;
   }
   .marca { text-align:center; margin-bottom:28px; }
@@ -39,18 +34,19 @@
   }
   .marca .lema { color:var(--muted); font-size:11px; letter-spacing:5px; text-transform:uppercase; margin-top:6px; }
   label { display:block; font-size:13px; color:var(--muted); margin:16px 0 6px; letter-spacing:.5px; }
-  input {
+  input[type=email], input[type=password], input[type=text], input[type=number] {
     width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--borde);
     background:rgba(255,255,255,.05); color:var(--texto); font-family:inherit; font-size:15px; outline:none;
   }
   input:focus { border-color:var(--verde); }
   button {
-    width:100%; margin-top:22px; padding:14px; border:none; border-radius:12px;
+    width:100%; margin-top:18px; padding:14px; border:none; border-radius:12px;
     background:linear-gradient(135deg,var(--verde),var(--teal)); color:#04231f;
     font-family:inherit; font-weight:800; font-size:16px; cursor:pointer; letter-spacing:.5px;
   }
   button:hover { filter:brightness(1.08); }
   button.secundario { background:transparent; color:var(--muted); border:1px solid var(--borde); margin-top:10px; font-weight:600; }
+  button.peligro { background:transparent; color:#FCA5A5; border:1px solid rgba(239,68,68,.35); margin-top:10px; font-weight:600; }
   .error { display:none; margin-top:16px; padding:12px 14px; border-radius:12px; font-size:14px;
     background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color:#FCA5A5; }
   .ok { display:none; margin-top:16px; padding:12px 14px; border-radius:12px; font-size:14px;
@@ -59,11 +55,19 @@
   .tarjeta .titulo { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:3px; margin-bottom:10px; }
   .tarjeta .dato { font-size:17px; font-weight:700; margin-bottom:4px; }
   .tarjeta .chico { font-size:13px; color:var(--muted); }
-  .pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700;
-    background:rgba(245,158,11,.14); border:1px solid rgba(245,158,11,.35); color:#FDE68A; }
   .oculto { display:none; }
   h2 { font-size:19px; margin-bottom:4px; }
   .sub { color:var(--muted); font-size:14px; margin-bottom:8px; }
+  /* filas de borradores */
+  .fila {
+    display:flex; align-items:center; gap:12px; padding:10px 8px;
+    border-bottom:1px solid var(--borde);
+  }
+  .fila input[type=checkbox] { width:18px; height:18px; accent-color:var(--verde); cursor:pointer; flex-shrink:0; }
+  .fila .nombre { flex:1; font-size:14px; }
+  .fila .precio-input { width:110px; padding:8px 10px; font-size:14px; flex-shrink:0; }
+  .acciones { display:flex; gap:10px; }
+  .acciones button { flex:1; }
 </style>
 </head>
 <body>
@@ -85,16 +89,16 @@
     <button id="btn-login">Entrar</button>
   </section>
 
-  <!-- VISTA: ALTA DE NEGOCIO (sin negocio aun) -->
+  <!-- VISTA: ALTA DE NEGOCIO -->
   <section id="vista-alta" class="oculto">
     <h2>Demos de alta tu negocio</h2>
     <div class="sub">Un minuto y queda listo para conectar el bot</div>
     <label>Nombre del negocio</label>
-    <input id="alta-nombre" placeholder="Ej. Ferretería El Tornillo">
+    <input id="alta-nombre" type="text" placeholder="Ej. Ferretería El Tornillo">
     <label>Rubro</label>
-    <input id="alta-rubro" placeholder="Ej. ferretería, farmacia, rotisería">
+    <input id="alta-rubro" type="text" placeholder="Ej. ferretería, farmacia, rotisería">
     <label>WhatsApp del negocio (con código de país)</label>
-    <input id="alta-numero" placeholder="543434065289" inputmode="numeric">
+    <input id="alta-numero" type="text" placeholder="543434065289" inputmode="numeric">
     <div class="error" id="error-alta"></div>
     <div class="ok" id="ok-alta"></div>
     <button id="btn-alta">Crear negocio</button>
@@ -113,7 +117,22 @@
       <div class="dato" id="n-estado"></div>
       <div class="chico" id="n-numero"></div>
     </div>
+    <button id="btn-catalogo">Validar catálogo</button>
     <button class="secundario" id="btn-salir">Salir</button>
+  </section>
+
+  <!-- VISTA: CATÁLOGO PENDIENTE -->
+  <section id="vista-borradores" class="oculto">
+    <h2>Catálogo pendiente</h2>
+    <div class="sub" id="borr-sub">Productos detectados del PDF: revisalos y aprobá.</div>
+    <div id="borr-lista"></div>
+    <div class="error" id="error-borr"></div>
+    <div class="ok" id="ok-borr"></div>
+    <div class="acciones">
+      <button id="btn-aprobar">Aprobar ✓</button>
+      <button class="peligro" id="btn-borrar">Borrar ✕</button>
+    </div>
+    <button class="secundario" id="btn-volver">Volver</button>
   </section>
 </main>
 
@@ -124,21 +143,34 @@
 
   const $ = (id) => document.getElementById(id);
   const mostrar = (vista) => {
-    ["vista-login", "vista-alta", "vista-negocio"].forEach(v => $(v).classList.toggle("oculto", v !== vista));
+    ["vista-login", "vista-alta", "vista-negocio", "vista-borradores"]
+      .forEach(v => $(v).classList.toggle("oculto", v !== vista));
   };
   const error = (id, msg) => { $(id).textContent = msg; $(id).style.display = msg ? "block" : "none"; };
+  const aviso = (id, msg) => { $(id).textContent = msg; $(id).style.display = msg ? "block" : "none"; };
+
+  let negocioActual = null;
+  let borradores = [];
 
   function slugDe(nombre) {
     return nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
   }
 
+  // precio de texto ("2.500" o "2,5") a número
+  function parsearPrecio(s) {
+    let t = String(s).trim().replace(/\$/g, "").replace(/\s/g, "");
+    if (!/^[\d.,]+$/.test(t) || t === "") return NaN;
+    if (t.includes(",")) t = t.replace(/\./g, "").replace(",", ".");
+    else t = t.replace(/\./g, "");
+    return Number(t);
+  }
+
   async function entrar() {
     error("error-login", "");
-    const email = $("email").value.trim();
-    const password = $("password").value;
-    if (!email || !password) { error("error-login", "Completá email y contraseña."); return; }
-    const { data, error: err } = await db.auth.signInWithPassword({ email, password });
+    const { data, error: err } = await db.auth.signInWithPassword({
+      email: $("email").value.trim(), password: $("password").value,
+    });
     if (err) { error("error-login", err.message); return; }
     await cargarMiNegocio();
   }
@@ -146,23 +178,18 @@
   async function cargarMiNegocio() {
     const { data: { user } } = await db.auth.getUser();
     if (!user) { mostrar("vista-login"); return; }
-    // RLS garantiza que solo puede ver SU negocio
     const { data } = await db.from("negocios").select("*").eq("dueno_user_id", user.id).maybeSingle();
-    if (!data) {
-      mostrar("vista-alta");
-    } else {
-      $("n-nombre").textContent = data.nombre;
-      $("n-rubro").textContent = data.rubro || "sin rubro definido";
-      $("n-numero").textContent = "Número: " + data.numero_whatsapp;
-      $("n-estado").textContent = data.activo ? "Conectado" : "Pausado";
-      $("n-estado").className = "dato";
-      mostrar("vista-negocio");
-    }
+    if (!data) { mostrar("vista-alta"); return; }
+    negocioActual = data;
+    $("n-nombre").textContent = data.nombre;
+    $("n-rubro").textContent = data.rubro || "sin rubro definido";
+    $("n-numero").textContent = "Número: " + data.numero_whatsapp;
+    $("n-estado").textContent = data.activo ? "Conectado" : "Pausado";
+    mostrar("vista-negocio");
   }
 
   async function darAlta() {
-    error("error-alta", "");
-    $("ok-alta").style.display = "none";
+    error("error-alta", ""); aviso("ok-alta", "");
     const nombre = $("alta-nombre").value.trim();
     const rubro = $("alta-rubro").value.trim();
     const numero = $("alta-numero").value.trim().replace(/[^\d+]/g, "");
@@ -181,9 +208,94 @@
       })
       .select().single();
     if (err) { error("error-alta", err.message); return; }
-    $("ok-alta").textContent = `Negocio "${data.nombre}" creado. El trigger ya te registró como dueño.`;
-    $("ok-alta").style.display = "block";
+    aviso("ok-alta", `Negocio "${data.nombre}" creado. Ya sos el dueño.`);
     setTimeout(cargarMiNegocio, 1500);
+  }
+
+  // ---- catálogo pendiente ----
+
+  async function abrirBorradores() {
+    error("error-borr", ""); aviso("ok-borr", "");
+    const { data, error: err } = await db
+      .from("productos_borrador").select("*").order("creado_en", { ascending: true });
+    if (err) { error("error-borr", err.message); return; }
+    borradores = data || [];
+    $("borr-sub").textContent = borradores.length
+      ? `${borradores.length} productos detectados del PDF. Revisá precios y aprobá.`
+      : "No hay productos pendientes. Mandame tu catálogo en PDF y lo cargo. 📄";
+    renderBorradores();
+    mostrar("vista-borradores");
+  }
+
+  function renderBorradores() {
+    const cont = $("borr-lista");
+    cont.innerHTML = "";
+    borradores.forEach((b, i) => {
+      const fila = document.createElement("div");
+      fila.className = "fila";
+      fila.innerHTML = `
+        <input type="checkbox" id="chk-${i}" checked>
+        <div class="nombre">${escapar(b.nombre)}${b.categoria ? ` <span style="color:var(--muted);font-size:12px">· ${escapar(b.categoria)}</span>` : ""}</div>
+        <input type="text" class="precio-input" id="precio-${i}" value="${formatoPrecio(b.precio)}">
+      `;
+      cont.appendChild(fila);
+    });
+  }
+
+  function formatoPrecio(n) {
+    return Number(n).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function escapar(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function seleccionados() {
+    return borradores
+      .map((b, i) => ({ b, i }))
+      .filter(({ i }) => $(`chk-${i}`).checked);
+  }
+
+  async function aprobar() {
+    error("error-borr", ""); aviso("ok-borr", "");
+    const sel = seleccionados();
+    if (sel.length === 0) { error("error-borr", "Marcá al menos un producto."); return; }
+
+    const aInsertar = [];
+    for (const { b, i } of sel) {
+      const precio = parsearPrecio($(`precio-${i}`).value);
+      if (isNaN(precio) || precio <= 0) {
+        error("error-borr", `El precio de "${b.nombre}" no es válido. Corregilo.`);
+        return;
+      }
+      aInsertar.push({
+        negocio_id: b.negocio_id, nombre: b.nombre,
+        descripcion: b.descripcion, categoria: b.categoria, precio,
+      });
+    }
+
+    const { error: errIns } = await db.from("productos").insert(aInsertar);
+    if (errIns) { error("error-borr", "No se pudo aprobar: " + errIns.message); return; }
+
+    const ids = sel.map(({ b }) => b.id);
+    const { error: errDel } = await db.from("productos_borrador").delete().in("id", ids);
+    if (errDel) { error("error-borr", "Se aprobó pero falló la limpieza: " + errDel.message); return; }
+
+    aviso("ok-borr", `${aInsertar.length} productos aprobados y en el catálogo. 🎉`);
+    borradores = borradores.filter((b, i) => !sel.some(({ i: j }) => j === i));
+    renderBorradores();
+  }
+
+  async function borrarSeleccion() {
+    error("error-borr", ""); aviso("ok-borr", "");
+    const sel = seleccionados();
+    if (sel.length === 0) { error("error-borr", "Marcá al menos un producto."); return; }
+    const ids = sel.map(({ b }) => b.id);
+    const { error: err } = await db.from("productos_borrador").delete().in("id", ids);
+    if (err) { error("error-borr", err.message); return; }
+    aviso("ok-borr", `${ids.length} borrados.`);
+    borradores = borradores.filter((b, i) => !sel.some(({ i: j }) => j === i));
+    renderBorradores();
   }
 
   async function salir() {
@@ -196,6 +308,10 @@
   $("password").addEventListener("keydown", e => { if (e.key === "Enter") entrar(); });
   $("btn-alta").addEventListener("click", darAlta);
   $("btn-salir").addEventListener("click", salir);
+  $("btn-catalogo").addEventListener("click", abrirBorradores);
+  $("btn-volver").addEventListener("click", () => mostrar("vista-negocio"));
+  $("btn-aprobar").addEventListener("click", aprobar);
+  $("btn-borrar").addEventListener("click", borrarSeleccion);
 
   (async () => {
     const { data: { session } } = await db.auth.getSession();
